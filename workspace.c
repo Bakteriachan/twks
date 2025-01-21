@@ -75,7 +75,7 @@ int get_active_workspace_name(char* workspace) {
 	int isActive = 0;
 	char *buff = malloc(WORKSPACE_MAX_SIZE);
 
-	int fd = open(".active", O_RDONLY);
+	int fd = open("/home/bakteria/.config/terminal-workspaces/.active", O_RDONLY);
 	if(fd != -1) {
 		int r = read(fd, buff, WORKSPACE_MAX_SIZE);
 		//realloc(buff, r);

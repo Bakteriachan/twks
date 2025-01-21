@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
 	// Set active workspace
 	for(int i = 1; i < argc - 1; i++) {
 		if(strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--workspace") == 0) {
-			int fd = open(".active", O_CREAT | O_TRUNC | O_WRONLY, S_IRWXU);
+			int fd = open("/home/bakteria/.config/terminal-workspaces/.active", O_CREAT | O_TRUNC | O_WRONLY, S_IRWXU);
 			if(fd == -1) {
 				int err_v = errno;
 				printf("%s: Could not open file: %s\n", argv[0], strerror(err_v));
