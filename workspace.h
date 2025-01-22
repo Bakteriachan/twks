@@ -20,4 +20,6 @@ void save_json_object(json_object* root, char* directory);
 
 int get_active_workspace_name(char* workspace);
 
+void get_active_workspace_keys(json_object* workspace, char **buff);
+
 #endif

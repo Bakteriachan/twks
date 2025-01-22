@@ -100,3 +100,22 @@ int get_active_workspace_name(char* workspace) {
 	}
 	return 0;
 }
+
+void get_active_workspace_keys(struct json_object *workspace, char **buff) {
+	*buff = malloc(2048);
+	struct json_object_iterator it = json_object_iter_begin(workspace);
+	struct json_object_iterator itEnd = json_object_iter_end(workspace);
+
+	for(int i = 0; !json_object_iter_equal(&it, &itEnd); json_object_iter_next(&it), i = 1) {
+		const char* name = json_object_iter_peek_name(&it);
+		if(i == 0) {
+			realloc(*buff, strlen(name) + 1);
+			strcpy(*buff, name);
+		} else {
+			realloc(*buff, strlen(*buff) + strlen(name) + 1); // plus 2 because of \0 and \n characters
+			strcat(*buff, name);
+		}
+		strcat(*buff, "\n");
+	}
+	*(*buff + strlen(*buff) - 1) = '\0'; // remove last newline character
+}

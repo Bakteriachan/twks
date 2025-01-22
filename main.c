@@ -28,14 +28,28 @@ int main(int argc, char* argv[]) {
 	void *buf;
 	if(open(directory, O_RDONLY) == -1) {
 		int err_v = errno;
-		fprintf(stderr, "error while locating file %s: %d - %s\n", directory, err_v, strerror(err_v));
+		fprintf(stderr, "%s: error while locating file %s: %d - %s\n", argv[0], directory, err_v, strerror(err_v));
 		int fd = creat(directory, S_IRWXU);
 		if(fd == -1) {
 			int err_v = errno;
 			char *err = strerror(err_v);
 			printf("Could not create file: %s\n", err);
+			json_object_put(root);
 			return err_v;
 		} 
+	}
+
+	if(argc > 1) {
+		for(int i = 0; i < argc; i++) {
+			if(strcmp(argv[i], "-k") == 0 || strcmp(argv[i], "--keys") == 0) {
+				char* keys;
+				get_active_workspace_keys(workspace, &keys);
+				printf("%s\n", keys);
+				json_object_put(root);
+				free(keys);
+				return 0;
+			}
+		}
 	}
 	
 	// GET variable value
@@ -50,6 +64,7 @@ int main(int argc, char* argv[]) {
 		showUsage = 0;
 	} 
 
+	// Get current active workspace
 	if(argc == 2 && (strcmp(argv[1], "-w") == 0 || strcmp(argv[1], "--workspace") == 0)) {
 		fprintf(stdout, "Current active workspace: %s\n", workspace_name);
 		showUsage = 0;
@@ -126,7 +141,9 @@ int main(int argc, char* argv[]) {
 		"    %s KEY [VALUE] [--workspace <workspace>]"
 		"\n\nOPTIONS:\n"
 		"    -w, --workspace <workspace>\n"
-		"            Use <workspace> as the active workspace\n";
+		"            Use <workspace> as the active workspace\n"
+		"	 -k, --keys\n"
+		"			 List all keys in the workspace\n";
 	if(showUsage)
 		printf(usage, argv[0]);
 
