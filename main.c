@@ -103,24 +103,28 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	if(argc == 5) {
+	if(argc == 5 || argc == 4) {
 		workspace = get_workspace_json_from_root_json(root, workspace_name);
-		char *key, *value = 0;
+		char *key, *value;
 		int isKey = 1;
 		for(int i = 1; i < argc; i++) {
 			if(strcmp(argv[i], "-w") != 0 && strcmp(argv[i], "--worskpace") != 0) {
 				if(isKey) {
-					key = argv[i];
+					key = malloc(strlen(argv[i]) + 1);
+					strcpy(key, argv[i]);
 					isKey = 0;
 				} else {
-					value = argv[i];
+					value = malloc(strlen(argv[i]) + 1);
+					strcpy(value, argv[i]);
 				}
+			} else {
+				i++;
+				continue;
 			}
 		}
-		if(value != 0) {
+		if(argc == 5) {
 			add_variable(workspace, key, value);
 			save_json_object(root, directory);
-			printf("the json object: %s\n", json_object_to_json_string_ext(root, JSON_C_TO_STRING_PRETTY)); 
 			showUsage = 0;
 		} else {
 			value = malloc(VALUE_MAX_SIZE);
@@ -128,7 +132,7 @@ int main(int argc, char* argv[]) {
 			if(value == NULL) {
 				fprintf(stderr, "%s: No value for such key: %s\n", argv[0], key);
 			} else {
-				fprintf(stdout, "%s\n", value);
+				fprintf(stdout, "+%s\n", value);
 			}
 			showUsage = 0;
 		}
