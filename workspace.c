@@ -51,6 +51,10 @@ void get_variable(json_object* workspace, char* key, char** value) {
 	}
 }
 
+void delete_key(json_object* workspace, char* key) {
+	json_object_object_del(workspace, key);
+}
+
 void save_json_object(json_object* root, char* directory) {
 	int fd = open(directory, O_TRUNC | O_WRONLY);
 	if(fd < 0) {
@@ -78,7 +82,6 @@ int get_active_workspace_name(char* workspace) {
 	int fd = open("/home/bakteria/.config/terminal-workspaces/.active", O_RDONLY);
 	if(fd != -1) {
 		int r = read(fd, buff, WORKSPACE_MAX_SIZE);
-		//realloc(buff, r);
 		if(r == -1) {
 			int err_v = errno;
 			dprintf(2, "Error reading: %s\n", strerror(err_v));
@@ -109,10 +112,10 @@ void get_active_workspace_keys(struct json_object *workspace, char **buff) {
 	for(int i = 0; !json_object_iter_equal(&it, &itEnd); json_object_iter_next(&it), i = 1) {
 		const char* name = json_object_iter_peek_name(&it);
 		if(i == 0) {
-			realloc(*buff, strlen(name) + 1);
+			*buff = realloc(*buff, strlen(name) + 1);
 			strcpy(*buff, name);
 		} else {
-			realloc(*buff, strlen(*buff) + strlen(name) + 1); // plus 2 because of \0 and \n characters
+			*buff = realloc(*buff, strlen(*buff) + strlen(name) + 1); // plus 2 because of \0 and \n characters
 			strcat(*buff, name);
 		}
 		strcat(*buff, "\n");

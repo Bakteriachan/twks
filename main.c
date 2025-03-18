@@ -25,6 +25,15 @@ int main(int argc, char* argv[]) {
 
 	int showUsage = 1;
 
+	if(argc == 3) {
+		if(strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "--delete") == 0) {
+			delete_key(workspace, argv[2]);
+			save_json_object(root, directory);
+			json_object_put(root);
+			return 0;
+		}
+	}
+
 	void *buf;
 	if(open(directory, O_RDONLY) == -1) {
 		int err_v = errno;
@@ -39,6 +48,31 @@ int main(int argc, char* argv[]) {
 		} 
 	}
 
+	// Set active workspace
+	for(int i = 1; i < argc - 1; i++) {
+		if(strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--workspace") == 0) {
+			int fd = open("/home/bakteria/.config/terminal-workspaces/.active", O_CREAT | O_TRUNC | O_WRONLY, S_IRWXU);
+			if(fd == -1) {
+				int err_v = errno;
+				printf("%s: Could not open file: %s\n", argv[0], strerror(err_v));
+				return 1;
+			}
+			ssize_t wr = write(fd, argv[i+1], strlen(argv[i+1]));
+			workspace_name = argv[i+1];
+			workspace = get_workspace_json_from_root_json(root, workspace_name);
+			if(wr == -1) {
+				int err_v = errno;
+				printf("%s: Could not write to file: %s", argv[0], strerror(err_v));
+				close(fd);
+				json_object_put(root);
+				return 1;
+			}
+			showUsage = 0;
+			close(fd);
+			break;
+		}
+	}
+
 	if(argc > 1) {
 		for(int i = 0; i < argc; i++) {
 			if(strcmp(argv[i], "-k") == 0 || strcmp(argv[i], "--keys") == 0) {
@@ -51,6 +85,16 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	}
+
+	// Show the whole workspace json object
+	for(int i = 1; i < argc; i++) {
+		if(strcmp(argv[i], "-j") == 0 || strcmp(argv[i], "--json") == 0) {
+			printf("%s\n", json_object_to_json_string(workspace));
+			json_object_put(root);
+			return 0;
+		}
+	}
+
 	
 	// GET variable value
 	if(argc == 2 && strcmp(argv[1], "-w") != 0 && strcmp(argv[1], "--workspace") != 0) {
@@ -79,29 +123,7 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	// Set active workspace
-	for(int i = 1; i < argc - 1; i++) {
-		if(strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--workspace") == 0) {
-			int fd = open("/home/bakteria/.config/terminal-workspaces/.active", O_CREAT | O_TRUNC | O_WRONLY, S_IRWXU);
-			if(fd == -1) {
-				int err_v = errno;
-				printf("%s: Could not open file: %s\n", argv[0], strerror(err_v));
-				return 1;
-			}
-			ssize_t wr = write(fd, argv[i+1], strlen(argv[i+1]));
-			workspace_name = argv[i+1];
-			if(wr == -1) {
-				int err_v = errno;
-				printf("%s: Could not write to file: %s", argv[0], strerror(err_v));
-				close(fd);
-				json_object_put(root);
-				return 1;
-			}
-			showUsage = 0;
-			close(fd);
-			break;
-		}
-	}
+
 
 	if(argc == 5 || argc == 4) {
 		workspace = get_workspace_json_from_root_json(root, workspace_name);
@@ -132,7 +154,7 @@ int main(int argc, char* argv[]) {
 			if(value == NULL) {
 				fprintf(stderr, "%s: No value for such key: %s\n", argv[0], key);
 			} else {
-				fprintf(stdout, "+%s\n", value);
+				fprintf(stdout, "%s\n", value);
 			}
 			showUsage = 0;
 		}
@@ -147,7 +169,11 @@ int main(int argc, char* argv[]) {
 		"    -w, --workspace <workspace>\n"
 		"            Use <workspace> as the active workspace\n"
 		"	 -k, --keys\n"
-		"			 List all keys in the workspace\n";
+		"			 List all keys in the workspace\n"
+		"	-d, --delete <key>\n"
+		"			 Delete key from the workspace\n"
+		"	-j, --json\n"
+		"			 Print the whole workspace json object\n";
 	if(showUsage)
 		printf(usage, argv[0]);
 
