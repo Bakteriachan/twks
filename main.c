@@ -5,7 +5,10 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <stdbool.h>
+
 #include <json-c/json.h>
+
 #include "workspace.h"
 
 
@@ -14,6 +17,8 @@ int main(int argc, char* argv[]) {
 	if(get_active_workspace_name(workspace_name) == -1) {
 		return 1;
 	}
+
+	bool istty = isatty(STDOUT_FILENO);
 
 
 	get_directory(directory);
@@ -105,6 +110,7 @@ int main(int argc, char* argv[]) {
 		} else {
 			fprintf(stdout, "%s", value);
 		}
+		if(istty) printf("\n");
 		showUsage = 0;
 	} 
 
@@ -154,8 +160,9 @@ int main(int argc, char* argv[]) {
 			if(value == NULL) {
 				fprintf(stderr, "%s: No value for such key: %s\n", argv[0], key);
 			} else {
-				fprintf(stdout, "%s\n", value);
+				fprintf(stdout, "%s", value);
 			}
+			if(istty) printf("\n");
 			showUsage = 0;
 		}
 	}
