@@ -175,11 +175,11 @@ int main(int argc, char* argv[]) {
 		"\n\nOPTIONS:\n"
 		"    -w, --workspace <workspace>\n"
 		"            Use <workspace> as the active workspace\n"
-		"	 -k, --keys\n"
+		"    -k, --keys\n"
 		"			 List all keys in the workspace\n"
-		"	-d, --delete <key>\n"
+		"    -d, --delete <key>\n"
 		"			 Delete key from the workspace\n"
-		"	-j, --json\n"
+		"    -j, --json\n"
 		"			 Print the whole workspace json object\n";
 	if(showUsage)
 		printf(usage, argv[0]);
