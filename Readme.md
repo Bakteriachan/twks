@@ -1,13 +1,13 @@
 # Terminal Workspaces
 
-  So, in my day-to-day work, i use curl as an api client, is more simple
-me than using Insomnia or Postman. Sometimes i need to copy some data so
-i can build my headers, like authentication header, I need to reference 
-some documents in the uri, and the job of copy-pasting every time i need
-to build a new curl command is to tedius for me. So that is why I built 
-<strong>Terminal Workspaces</strong>, so i can use some variables and 
-reuse them between different terminal sessions that I am currently
-running.
+  So, in my day-to-day work, I use curl as an API client, is more simple
+for me than using Insomnia or Postman. Sometimes i need to copy some
+data so I can build my http headers, like authentication header, I need
+to reference some documents in the URI (`/users/(userId)`), and the job
+of copy-pasting every time i need to build a new curl command is to
+tedius for me. So that is why I built <strong>Terminal Workspaces</strong>, so i can
+use some variables and reuse them between different terminal sessions that
+I am currently running.
 
 ## Todo
   Right now this tool is hard coded to only work in my filesystem structure,
