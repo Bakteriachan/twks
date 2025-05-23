@@ -18,7 +18,13 @@ or something alike.
 
 ## How to build
   This tool only depends on <a href="https://github.com/json-c/json-c">libjson-c</a> to access
-the workspace keys and values. On ubuntu it can be installed with ```apt install libjson-c-dev```
-On archlinux ```pacman -S libjson-c``` can be used.
+the workspace keys and values. On ubuntu it can be installed with
+```
+apt install libjson-c-dev
+```
+On archlinux
+```
+pacman -S libjson-c
+``` 
   Just run `make` command, which builds `workspace` executable, you can copy
 this executable to `~/.local/bin` or any other folder you like.
