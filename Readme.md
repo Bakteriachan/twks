@@ -27,5 +27,5 @@ On archlinux
 ```
 pacman -S libjson-c
 ``` 
-  Just run `make` command, which builds `workspace` executable, you can
+  Just run `make` command, which builds `twks` executable, you can
 copy this executable to `~/.local/bin` or any other folder you like.
