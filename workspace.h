@@ -12,6 +12,8 @@ json_object* get_workspace_json_from_root_json(json_object*, char*);
 
 void get_directory(char*);
 
+int set_active_workspace(char*);
+
 void add_variable(json_object* workspace, char* key, char* value);
 
 void get_variable(json_object* workspace, char* key, char** value);

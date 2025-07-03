@@ -5,16 +5,64 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include "workspace.h"
 
 void get_directory(char* location) {
-	char *loc = "/home/bakteria/.config/terminal-workspaces/workspaces.json";
+	struct stat *stat_buff = malloc(sizeof(struct stat));
+	int folder_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+
+	char *home = getenv("HOME");
+	char *loc = malloc(1048); 
+	if(home == 0) {
+		if(stat("/tmp/twks", stat_buff) == -1) {
+			mkdir("/tmp/twks", folder_mode);
+		}
+		sprintf(loc, "/tmp/tkws");
+	} else {
+		char *folder = malloc(128);
+		sprintf(folder, "%s/.twks", home);
+		if(stat(folder, stat_buff) == -1) {
+			mkdir(folder, folder_mode);
+		}
+		strcpy(loc, folder);
+	}
 	location = strcpy(location, loc);
 }
 
+int set_active_workspace(char *workspace) {
+	char *directory = malloc(1048),
+			 *file = malloc(1048);
+	get_directory(directory);
+	sprintf(file, "%s/.active", directory);
+	int fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
+	if(fd < 0) {
+		int err_v = errno;
+		printf("%s: Could not open file: %s\n", file, strerror(err_v));
+		return 1;
+	}
+
+	ssize_t written = write(fd, workspace, strlen(workspace));
+	if(written < 0) {
+		int err_v = errno;
+		printf("%s: Could not write to file: %s", file, strerror(err_v));
+		free(directory);
+		free(file);
+		close(fd);
+		return 1;
+	}
+
+	free(directory);
+	free(file);
+	close(fd);
+	return 0;
+}
 
 json_object *get_json_object(char* file_dir) {
-	json_object *root = json_object_from_file(file_dir);
+	char *file_name = "workspaces.json";
+	char *file = malloc(1048);
+	sprintf(file, "%s/%s", file_dir, file_name);
+	json_object *root = json_object_from_file(file);
 
 	if(root == NULL) {
 		return json_object_new_object();
@@ -56,7 +104,9 @@ void delete_key(json_object* workspace, char* key) {
 }
 
 void save_json_object(json_object* root, char* directory) {
-	int fd = open(directory, O_TRUNC | O_WRONLY);
+	char *file = malloc(1048);
+	sprintf(file, "%s/workspaces.json", directory);
+	int fd = open(file, O_TRUNC | O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
 	if(fd < 0) {
 		int err_v = errno;
 		fprintf(stderr, "Error saving json object: %s\n", strerror(err_v));
@@ -79,7 +129,13 @@ int get_active_workspace_name(char* workspace) {
 	int isActive = 0;
 	char *buff = malloc(WORKSPACE_MAX_SIZE);
 
-	int fd = open("/home/bakteria/.config/terminal-workspaces/.active", O_RDONLY);
+	char *directory = malloc(1048),
+			 *file = malloc(1048);
+	get_directory(directory);
+
+	sprintf(file, "%s/.active", directory);
+	
+	int fd = open(file, O_RDONLY);
 	if(fd != -1) {
 		int r = read(fd, buff, WORKSPACE_MAX_SIZE);
 		if(r == -1) {
