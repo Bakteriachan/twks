@@ -10,13 +10,6 @@ tedius for me. So that is why I built <strong>Terminal Workspaces</strong>,
 use some variables and reuse them between different terminal sessions that
 I am currently running.
 
-## Todo
-  Right now this tool is hard coded to only work in my filesystem structure,
-it should use linux env vars to locate users' config folder.
-  I dont like the way the currently active workspace is being saved, there
-should be some tool that can help me with this, some key-value systemd
-daemon or something alike.
-
 ## How to build
   This tool only depends on <a href="https://github.com/json-c/json-c">libjson-c</a> to access
 the workspace keys and values. On ubuntu it can be installed with
