@@ -10,12 +10,13 @@
 
 void get_directory(char* location) {
 	struct stat *stat_buff = malloc(sizeof(struct stat));
-	int folder_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+	int folder_mode = S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IROTH;
 
 	char *home = getenv("HOME");
 	char *loc = malloc(1048); 
 	if(home == 0) {
 		if(stat("/tmp/twks", stat_buff) == -1) {
+      umask(S_IXOTH | S_IXGRP | S_IWOTH);
 			mkdir("/tmp/twks", folder_mode);
 		}
 		sprintf(loc, "/tmp/tkws");
@@ -23,6 +24,7 @@ void get_directory(char* location) {
 		char *folder = malloc(128);
 		sprintf(folder, "%s/.twks", home);
 		if(stat(folder, stat_buff) == -1) {
+      umask(S_IXOTH | S_IXGRP | S_IWOTH);
 			mkdir(folder, folder_mode);
 		}
 		strcpy(loc, folder);
